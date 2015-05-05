@@ -1,0 +1,31 @@
+{
+  "name": "mag3llan-sdk",
+  "version": "0.0.10",
+  "description": "Mag3llan's similarity API SDK",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mag3llan/node-sdk"
+  },
+  "keywords": [
+    "Similarity",
+    "Mag3llan",
+    "PLU",
+    "Recommendation",
+    "Engine"
+  ],
+  "author": "Mag3llan dev team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Mag3llan/node-sdk/issues"
+  },
+  "homepage": "https://github.com/Mag3llan/node-sdk",
+  "dependencies": {
+    "bluebird": "^2.9.25",
+    "limiter": "^1.0.5",
+    "request": "^2.55.0"
+  }
+}
