@@ -67,6 +67,9 @@ function get(resourceURI, key) {
 	};
 
 	return execute(getOpts)
+		.then(function(results) {
+			return JSON.parse(results);
+		})
 }
 
 function post(resourceURI, resource) {
