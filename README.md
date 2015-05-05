@@ -1,4 +1,4 @@
-# node-sdk
+# mag3llan-sdk
 
 > Mag3llan SDK for NodeJS
 
