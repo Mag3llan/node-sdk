@@ -1,18 +1,123 @@
-var assert = require("assert")
+var sinon = require('sinon'),
+	assert = require("assert"),
+	chai = require('chai'),
+	chaiAsPromised = require('chai-as-promised'),
+	Promise = require('bluebird');
+
+chai.should();
+chai.use(chaiAsPromised);
 var Mag3llan = require('../index.js');
 
-describe('Mag3llan', function(){                   
-  var sdk = new Mag3llan('http://localhost:8080/api/', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VybmFtZSI6ImxlbyIsIkVtYWlsIjoibGVvQGZzLmNvbSJ9.x__nBKPF7bEDtOB18RcSe7xGXrxiUHtigycVwGtw8cM');
-    
-  describe('preference', function(done){
-    sdk.delPreference(2, 2)
-      .then(function(result) {
-        it('response should be 201', function(done){
-          sdk.setPreference(2, 2, 3)
-              .then(function(result) {
-                assert.equal('The request has been fulfilled and resulted in a new resource being created.', result);
-              });
-        })
-      })
-  })
-})
+describe('Mag3llan SDK', function() {
+	this.timeout(1000);
+	var mag3llan = new Mag3llan('http://localhost:8080/api/', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VybmFtZSI6ImxlbyIsIkVtYWlsIjoibGVvQGZzLmNvbSJ9.x__nBKPF7bEDtOB18RcSe7xGXrxiUHtigycVwGtw8cM');
+
+	describe('Set preference', function() {
+		var uid = 666;
+		var iid = 333;
+		var v = 4;
+
+		it('Should set the preference', function(done) {
+			mag3llan.setPreference(uid, iid, v)
+				.then(function() {
+					done();
+				});
+		});
+
+		it('Should not override an existing preference', function(done) {
+			mag3llan.setPreference(uid, iid, v).should.be.rejected.and.notify(done);
+		});
+
+		it('Force should override the existing preference', function(done) {
+			mag3llan.setPreference(uid, iid, v, true)
+				.then(function() {
+					done();
+				});
+		});
+
+	});
+
+	describe('update preference', function() {
+		var uid = 666;
+		var iid = 333;
+		var v = 5;
+
+		it('Should update the preference', function(done) {
+			mag3llan.updatePreference(uid, iid, v)
+				.then(function() {
+					done();
+				});
+		});
+
+		var oiid = 111;
+
+		it('Should create a preference', function(done) {
+			mag3llan.updatePreference(uid, oiid, v)
+				.then(function() {
+					done();
+				});
+		});
+
+	});
+
+	describe('Get PLU', function() {
+
+		var uid = 100;
+
+		it('Should return 200 OK', function(done) {
+			mag3llan.plu(uid)
+				.then(function(plu) {
+					plu.should.have.property('length').equal(0);
+					done();
+				});
+		});
+
+	});
+
+	describe('Get PLU Item Rating', function() {
+
+		var uid = 100;
+		var iid = 603;
+
+		it('Should return 200 OK', function(done) {
+			mag3llan.pluItemRating(uid, iid)
+				.then(function(rating) {
+					rating.pv.should.equal(0);
+					done();
+				});
+		});
+
+	});
+
+
+	describe('Get overlaps', function() {
+		var uid = 666;
+		var ouid = 101;
+		var iid = 333;
+		var v = 4;
+		it('Should return 200 OK', function(done) {
+			mag3llan.updatePreference(ouid, iid, v)
+			.then(function() {
+				mag3llan.overlaps(uid, ouid)
+					.then(function(response) {
+						response.overlaps.should.have.property('length').above(0);
+						done();
+					});
+			});
+		})
+	});
+
+	describe('Delete user', function() {
+		var uid = 666;
+
+		it('should return no content', function(done) {
+			mag3llan.deleteUser(uid)
+				.then(function(response) {
+					response.statusCode.should.equal(204);
+					done();
+				});
+		});
+
+	});
+	
+});

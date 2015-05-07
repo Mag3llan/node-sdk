@@ -13,14 +13,37 @@ function Mag3llan(uri, key) {
 	mag3llanURI = uri;
 }
 
-Mag3llan.prototype.setPreference = function(userId, itemId, score) {
+Mag3llan.prototype.setPreference = function(userId, itemId, score, force) {
 	var preference = {
 		uid: parseInt(userId),
 		iid: parseInt(itemId),
 		value: parseFloat(score)
 	};
 
-	return post('preferences', preference);
+	var self = this;
+	return post('preference', preference)
+		.then(function(response) {
+			if (response.statusCode != 201)
+				throw new Error(response);
+
+		})
+		.catch(function(err) {
+			if (err.statusCode == 409 && force && force == true)
+				return self.updatePreference(userId, itemId, score);
+
+			throw err;
+		});
+}
+
+Mag3llan.prototype.updatePreference = function (userId, itemId, score) {
+		var preference = {
+		uid: parseInt(userId),
+		iid: parseInt(itemId),
+		value: parseFloat(score)
+	};
+
+	return put('preference/' + userId + '/' + itemId, preference);
+
 }
 
 Mag3llan.prototype.delPreference = function(userId, itemId) {
@@ -68,7 +91,7 @@ function get(resourceURI, key) {
 
 	return execute(getOpts)
 		.then(function(results) {
-			return JSON.parse(results);
+			return JSON.parse(results.body);
 		})
 }
 
@@ -105,8 +128,22 @@ function del(resourceURI) {
 	return execute(delOpts);
 }
 
-function put(resourceURI) {
+function put(resourceURI, resource) {
+	var putOpts = {
+		uri: encodeURI(mag3llanURI + resourceURI),
+		method: 'PUT',
+		timeout: timeout,
+		json: true,
+		body: resource,
+		resolveWithFullResponse: true,
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json',
+			'Access_Token': api_key
+		}
+	}
 
+	return execute(putOpts);
 }
 
 function execute(options) {
@@ -115,10 +152,15 @@ function execute(options) {
 			return new Promise(function(resolve, reject) {
 				request(options, function(error, response, body) {
 					if (error) {
+						console.log('A major failure occurred... ');
+						console.dir(error);
 						reject(error);
 					} else {
 						if (response.statusCode >= 200 && response.statusCode < 300) {
-							resolve(body);
+							resolve({
+								body: body,
+								statusCode: response.statusCode
+							});
 						} else {
 							var customError = new Error(body);
 							customError.statusCode = response.statusCode;
