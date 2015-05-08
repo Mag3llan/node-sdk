@@ -6,7 +6,7 @@ var timeout = 60000;
 var mag3llanURI;
 var api_key;
 
-var rateLimiter = Promise.promisifyAll(new limiter.RateLimiter(1000, 'second'));
+var rateLimiter = Promise.promisifyAll(new limiter.RateLimiter(50, 'second'));
 
 function Mag3llan(uri, key) {
 	api_key = key;
