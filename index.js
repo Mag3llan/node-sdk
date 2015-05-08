@@ -6,44 +6,21 @@ var timeout = 60000;
 var mag3llanURI;
 var api_key;
 
-var rateLimiter = Promise.promisifyAll(new limiter.RateLimiter(100, 'second'));
+var rateLimiter = Promise.promisifyAll(new limiter.RateLimiter(1000, 'second'));
 
 function Mag3llan(uri, key) {
 	api_key = key;
 	mag3llanURI = uri;
 }
 
-Mag3llan.prototype.setPreference = function(userId, itemId, score, force) {
+Mag3llan.prototype.setPreference = function(userId, itemId, score) {
 	var preference = {
 		uid: parseInt(userId),
 		iid: parseInt(itemId),
 		value: parseFloat(score)
 	};
 
-	var self = this;
-	return post('preference', preference)
-		.then(function(response) {
-			if (response.statusCode != 201)
-				throw new Error(response);
-
-		})
-		.catch(function(err) {
-			if (err.statusCode == 409 && force && force == true)
-				return self.updatePreference(userId, itemId, score);
-
-			throw err;
-		});
-}
-
-Mag3llan.prototype.updatePreference = function (userId, itemId, score) {
-		var preference = {
-		uid: parseInt(userId),
-		iid: parseInt(itemId),
-		value: parseFloat(score)
-	};
-
 	return put('preference/' + userId + '/' + itemId, preference);
-
 }
 
 Mag3llan.prototype.delPreference = function(userId, itemId) {

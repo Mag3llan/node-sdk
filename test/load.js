@@ -14,7 +14,7 @@ for (var i = 0; i < itemIds.length; i++) {
 }
 
 describe('Mag3llan SDK', function() {
-	this.timeout(10000);
+	this.timeout(100000);
 	var mag3llan = new Mag3llan('http://localhost:8080/api/', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VybmFtZSI6ImxlbyIsIkVtYWlsIjoibGVvQGZzLmNvbSJ9.x__nBKPF7bEDtOB18RcSe7xGXrxiUHtigycVwGtw8cM');
 
 	describe('Set 10,000 preferences on single user', function() {

@@ -17,42 +17,22 @@ describe('Mag3llan SDK', function() {
 		var iid = 333;
 		var v = 4;
 
-		it('Should set the preference', function(done) {
+		it('Should create a preference', function(done) {
 			mag3llan.setPreference(uid, iid, v)
 				.then(function() {
 					done();
 				});
 		});
 
-		it('Should not override an existing preference', function(done) {
-			mag3llan.setPreference(uid, iid, v).should.be.rejected.and.notify(done);
+		it('Should update the preference', function(done) {
+			mag3llan.setPreference(uid, iid, v + 1)
+				.then(function() {
+					done();
+				});
 		});
 
 		it('Force should override the existing preference', function(done) {
 			mag3llan.setPreference(uid, iid, v, true)
-				.then(function() {
-					done();
-				});
-		});
-
-	});
-
-	describe('update preference', function() {
-		var uid = 666;
-		var iid = 333;
-		var v = 5;
-
-		it('Should update the preference', function(done) {
-			mag3llan.updatePreference(uid, iid, v)
-				.then(function() {
-					done();
-				});
-		});
-
-		var oiid = 111;
-
-		it('Should create a preference', function(done) {
-			mag3llan.updatePreference(uid, oiid, v)
 				.then(function() {
 					done();
 				});
@@ -89,14 +69,13 @@ describe('Mag3llan SDK', function() {
 
 	});
 
-
 	describe('Get overlaps', function() {
 		var uid = 666;
 		var ouid = 101;
 		var iid = 333;
 		var v = 4;
 		it('Should return 200 OK', function(done) {
-			mag3llan.updatePreference(ouid, iid, v)
+			mag3llan.setPreference(ouid, iid, v)
 			.then(function() {
 				mag3llan.overlaps(uid, ouid)
 					.then(function(response) {
