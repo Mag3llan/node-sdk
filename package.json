@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/Mag3llan/node-sdk",
   "dependencies": {
+    "agentkeepalive": "^2.0.2",
     "bluebird": "^2.9.25",
     "limiter": "^1.0.5",
     "request": "^2.55.0"

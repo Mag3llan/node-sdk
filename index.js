@@ -2,11 +2,20 @@
 var Promise = require('bluebird');
 var request = require('request');
 var limiter = require('limiter');
+var Agent = require('agentkeepalive');
+
+var keepaliveAgent = new Agent({
+  maxSockets: 100,
+  maxFreeSockets: 10,
+  timeout: 60000,
+  keepAliveTimeout: 30000 // free socket keepalive for 30 seconds
+});
+    
 var timeout = 60000;
 var mag3llanURI;
 var api_key;
 
-var rateLimiter = Promise.promisifyAll(new limiter.RateLimiter(50, 'second'));
+var rateLimiter = Promise.promisifyAll(new limiter.RateLimiter(1000, 'second'));
 
 function Mag3llan(uri, key) {
 	api_key = key;
@@ -109,11 +118,13 @@ function put(resourceURI, resource) {
 	var putOpts = {
 		uri: encodeURI(mag3llanURI + resourceURI),
 		method: 'PUT',
+		agent: keepaliveAgent,
 		timeout: timeout,
 		json: true,
 		body: resource,
 		resolveWithFullResponse: true,
 		headers: {
+			'Connection': 'keep-alive',
 			'Accept': 'application/json',
 			'Content-Type': 'application/json',
 			'Access_Token': api_key
