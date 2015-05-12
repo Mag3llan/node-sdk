@@ -1,6 +1,6 @@
 {
   "name": "mag3llan-sdk",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Mag3llan's similarity API SDK",
   "main": "index.js",
   "scripts": {
