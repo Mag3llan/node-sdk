@@ -69,7 +69,7 @@ Mag3llan.prototype.similarity = function(userId, otherUserId) {
 	return get('similarity/' + userId + '/' + otherUserId);
 }
 
-function get(resourceURI, key) {
+function get(resourceURI) {
 	var getOpts = {
 
 		uri: encodeURI(mag3llanURI + resourceURI),
