@@ -65,6 +65,10 @@ Mag3llan.prototype.recommendations = function(userId) {
 	return get('recommendation/' + userId);
 }
 
+Mag3llan.prototype.recommendations = function(userId, otherUserId) {
+	return get('recommendation/' + userId + '/' + otherUserId);
+}
+
 Mag3llan.prototype.similarity = function(userId, otherUserId) {
 	return get('similarity/' + userId + '/' + otherUserId);
 }
