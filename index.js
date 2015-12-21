@@ -2,6 +2,7 @@
 var Promise = require('bluebird');
 var request = require('request');
 var limiter = require('limiter');
+var debug = require('debug')('node-sdk');
 var Agent = require('agentkeepalive');
 
 var keepaliveAgent = new Agent({
@@ -17,6 +18,16 @@ var api_key;
 
 var rate = 300;
 
+function isURL(str) {
+  var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+  '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name
+  '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+  '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+  '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+  '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  return pattern.test(str);
+}
+
 if (process.env.MAG3LLAN_RATE_LIMIT) {
 	rate = parseInt(process.env.MAG3LLAN_RATE_LIMIT);
 }
@@ -24,8 +35,15 @@ if (process.env.MAG3LLAN_RATE_LIMIT) {
 var rateLimiter = Promise.promisifyAll(new limiter.RateLimiter(rate, 'second'));
 
 function Mag3llan(uri, key) {
+	if (!isURL(uri))
+		throw new Error('Invalid Mag3llan host URI');
+	if (!key)
+		throw new Error('Mag3llan API key is required');
+
 	api_key = key;
-	mag3llanURI = uri;
+	mag3llanURI = uri + '/api/';
+
+	debug(mag3llanURI)
 }
 
 Mag3llan.prototype.setPreference = function(userId, itemId, score) {
@@ -65,7 +83,7 @@ Mag3llan.prototype.recommendations = function(userId) {
 	return get('recommendation/' + userId);
 }
 
-Mag3llan.prototype.recommendations = function(userId, otherUserId) {
+Mag3llan.prototype.groupRecommendations = function(userId, otherUserId) {
 	return get('recommendation/' + userId + '/' + otherUserId);
 }
 
@@ -86,8 +104,8 @@ function get(resourceURI) {
 	};
 
 	return execute(getOpts)
-		.then(function(results) {
-			return JSON.parse(results.body);
+		.then(function(response) {
+			return JSON.parse(response.body);
 		})
 }
 
@@ -121,7 +139,13 @@ function del(resourceURI) {
 		}
 	};
 
-	return execute(delOpts);
+	return execute(delOpts)
+		.then(function(response) {
+			if (response.statusCode != 204)
+				return Promise.reject('Unable to delete: ' + resourceURI);
+
+			return response.body;
+		});
 }
 
 function put(resourceURI, resource) {
@@ -148,17 +172,19 @@ function execute(options) {
 	return rateLimiter.removeTokensAsync(1)
 		.then(function() {
 			return new Promise(function(resolve, reject) {
+				debug(options);
 				request(options, function(error, response, body) {
 					if (error) {
-						console.log('A major failure occurred... ');
-						console.dir(error);
+						debug(err)
 						reject(error);
 					} else {
 						if (response.statusCode >= 200 && response.statusCode < 300) {
-							resolve({
+							var result = {
 								body: body,
 								statusCode: response.statusCode
-							});
+							};
+							console.log(result)
+							resolve(result);
 						} else {
 							var customError = new Error(body);
 							customError.statusCode = response.statusCode;

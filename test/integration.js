@@ -8,9 +8,14 @@ chai.should();
 chai.use(chaiAsPromised);
 var Mag3llan = require('../index.js');
 
+var mag3llanHost = process.env.MAG3LLAN_HOST || 'http://localhost:8080';
+var mag3llanKey = process.env.MAG3LLAN_KEY;
+
 describe('Mag3llan SDK', function() {
+	
+
 	this.timeout(1000);
-	var mag3llan = new Mag3llan('http://localhost:8080/api/', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VybmFtZSI6ImxlbyIsIkVtYWlsIjoibGVvQGZzLmNvbSJ9.x__nBKPF7bEDtOB18RcSe7xGXrxiUHtigycVwGtw8cM');
+	var mag3llan = new Mag3llan(mag3llanHost, mag3llanKey);
 
 	describe('Set preference', function() {
 		var uid = 666;
@@ -92,11 +97,25 @@ describe('Mag3llan SDK', function() {
 		it('should return no content', function(done) {
 			mag3llan.deleteUser(uid)
 				.then(function(response) {
-					response.statusCode.should.equal(204);
+					response.should.be.empty;
 					done();
 				});
 		});
 
 	});
+
+	describe('Get group recommendations', function() {
+		var uid = 666;
+		var ouid = 101;
+
+
+		it('should return no content', function(done) {
+			mag3llan.groupRecommendations(uid, ouid)
+							.then(function(response) {
+								response.should.be.empty;
+								done();
+							});
+		});
+	})
 	
 });

@@ -13,9 +13,12 @@ for (var i = 0; i < ids.length; i++) {
     ids[i] = i
 }
 
+var mag3llanHost = process.env.MAG3LLAN_HOST || 'http://localhost:8080';
+var mag3llanKey = process.env.MAG3LLAN_KEY;
+
 describe('Mag3llan SDK', function() {
 	this.timeout(100000);
-	var mag3llan = new Mag3llan('http://localhost:8080/api/', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VybmFtZSI6ImxlbyIsIkVtYWlsIjoibGVvQGZzLmNvbSJ9.x__nBKPF7bEDtOB18RcSe7xGXrxiUHtigycVwGtw8cM');
+	var mag3llan = new Mag3llan(mag3llanHost, mag3llanKey);
 
 	describe('Set 10,000 preferences on single user (zero co-occurrences)', function() {
 		var uid = 667;

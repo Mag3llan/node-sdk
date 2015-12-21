@@ -20,6 +20,6 @@ var otherUsers = mag3llan.plu(userId)
 var otherUsers = mag3llan.pluItemRating(userId, itemId)
 var overlaps = mag3llan.overlaps(userId, otherUserId)
 var recommendations = mag3llan.recommendations(userId)
-var recommendations = mag3llan.recommendations(userId, otherUserId)
+var recommendations = mag3llan.groupRecommendations(userId, otherUserId)
 var similarity = mag3llan.similarity(userId, otherUserId)
 ```
