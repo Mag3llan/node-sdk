@@ -175,7 +175,7 @@ function execute(options) {
 				debug(options);
 				request(options, function(error, response, body) {
 					if (error) {
-						debug(err)
+						debug(error)
 						reject(error);
 					} else {
 						if (response.statusCode >= 200 && response.statusCode < 300) {
@@ -183,7 +183,7 @@ function execute(options) {
 								body: body,
 								statusCode: response.statusCode
 							};
-							console.log(result)
+							debug(result)
 							resolve(result);
 						} else {
 							var customError = new Error(body);
